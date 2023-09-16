@@ -1,9 +1,3 @@
-<template>
-  <div>
-      <code-block :content="content" :width="500"></code-block>
-  </div>
-</template>
-
 <script setup lang="ts">
 import {ref} from 'vue'
 import CodeBlock from "./components/code-block.vue";
@@ -19,7 +13,18 @@ fact(5).then(show)
 fact(2).then(show)
 fact(3).then(show)
 fact(1).then(show)`)
+
+const copyContent = (content: string) => {
+  console.log('copyContent')
+  // console.log(content)
+}
 </script>
+
+<template>
+  <div>
+      <code-block @copy="copyContent" :content="content" :width="500"></code-block>
+  </div>
+</template>
 
 <style scoped>
 
