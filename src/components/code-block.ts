@@ -1,4 +1,4 @@
-import { RenderData, RenderConfig, RenderContent } from "./types
+import { RenderData, RenderConfig, RenderContent } from "./types"
 
 export const getRenderData = (renderConfig: RenderConfig): RenderData => {
   // 配置
