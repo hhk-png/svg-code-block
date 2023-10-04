@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { RenderData } from './code-block.types.ts'
+import { RenderData } from './types.ts'
 import { getRenderData } from './code-block.ts'
 
 // 传递进来的数据
@@ -86,3 +86,4 @@ document.addEventListener('copy', async () => {
   font-family: "Lucida Console", Courier, monospace;
 }
 </style>
+./types.ts
