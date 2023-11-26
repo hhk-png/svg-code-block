@@ -6,8 +6,6 @@ import { shikiTokens } from './code-block.ts'
 // 传递进来的数据
 const props = withDefaults(defineProps<{
   content: string
-  width: number
-  height: number
   fontSize?: number
   x?: number
   y?: number
@@ -16,7 +14,46 @@ const props = withDefaults(defineProps<{
   x: 0,
   y: 0,
 })
+const emits = defineEmits(['copy']);
+const VINTERVAL = 1.5 * props.fontSize;
+const HINTERVAL = 0.6 * props.fontSize;
 
+// 30 +
+
+// adaptive width and height
+const getAdaptive = (str: string, fontSize: number, fontFamily: string) => {
+  const arr = str.split('\n');
+  const len = arr.length;
+  const maxHLen = Math.max(...arr.map((item) => item.length));
+  const [fontWidth, fontHeight] = getFontWidthAndHeight(fontSize, fontFamily);
+  console.log(fontHeight)
+  return [maxHLen * fontWidth + HINTERVAL, len * fontHeight + VINTERVAL]
+}
+
+const getFontWidthAndHeight = (fontSize: number, fontFamily: string) => {
+  const span = document.createElement('span');
+  span.style.visibility = "hidden";
+  span.style.fontSize = fontSize + 'px';
+  span.style.fontFamily = fontFamily;
+  span.style.display = "block";
+  document.body.appendChild(span);
+  if (typeof span.textContent != "undefined") {
+    span.textContent = 'a';
+  } else {
+    span.innerText = 'a';
+  }
+  const spanComputedStyle = window.getComputedStyle(span);
+  return [parseInt(spanComputedStyle.width), parseInt(spanComputedStyle.height)]
+}
+
+
+const adaptiveWidth = ref<number>(0);
+const adaptiveHeight = ref<number>(0);
+const [aWidth, aHeight] = getAdaptive(props.content, props.fontSize, '"Comic sans MS", Courier, monospace');
+adaptiveWidth.value = aWidth;
+adaptiveHeight.value = aHeight;
+
+// preprocess blank line
 const preprocessToken = (arr: IThemedToken[][]) => {
   for (let i = 0; i < arr.length; i++) {
     if (arr[i].length === 0) {
@@ -29,8 +66,6 @@ const preprocessToken = (arr: IThemedToken[][]) => {
   return arr;
 };
 
-// 
-const emits = defineEmits(['copy']);
 
 
 const tokenLines = preprocessToken(await shikiTokens(props.content));
@@ -43,8 +78,6 @@ const decodeContent = (str: string) => {
 }
 
 console.log(tokenLines)
-
-
 
 // svg dom 对象
 const svgElement = ref<SVGElement | null>(null)
@@ -70,10 +103,11 @@ const copyContent = async (e: Event) => {
 </script>
 
 <template>
-  <svg @click="copyContent" :width="width" :height="height" ref="svgElement">
-    <rect :width="width" :height="height" fill="#eee"></rect>
-    <text :y="(index + 1) * fontSize" v-for="(tokenLine, index) in tokenLines" :key="index">
-      <tspan :font-size="fontSize" :fill="token.color" class="monospace" v-for="(token, index) in tokenLine" :key="index">
+  <svg @click="copyContent" :width="adaptiveWidth" :height="adaptiveHeight" class="monospace" ref="svgElement">
+    <rect :width="adaptiveWidth" :height="adaptiveHeight" fill="#eee"></rect>
+    <text class="userSelectNone" :x="HINTERVAL / 2" :y="(index + 1) * VINTERVAL"
+      v-for="(tokenLine, index) in tokenLines" :key="index">
+      <tspan :font-size="fontSize" :fill="token.color" v-for="(token, index) in tokenLine" :key="index">
         {{ decodeContent(token.content) }}
       </tspan>
     </text>
@@ -82,15 +116,18 @@ const copyContent = async (e: Event) => {
 
 <style scoped>
 .userSelectNone {
-  user-select: none;
+  user-select: text;
+  cursor: default;
+  /* transform-origin: center; */
 }
 
 /* 
   备选字体
     font-family="Comic sans MS"
+    Lucida Console
 */
 .monospace {
-  font-family: "Lucida Console", Courier, monospace;
+  font-family: "Comic sans MS", Courier, monospace;
 
 }
 </style>
