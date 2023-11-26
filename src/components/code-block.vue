@@ -62,19 +62,12 @@ const copyContent = async (e: Event) => {
   emits('copy', props.content)
 }
 
-// // ctrl + c
-// document.addEventListener('copy', async () => {
-//   const copiedContent = await navigator.clipboard.readText()
-//   const content = copiedContent.split('\n').join('')
-//   console.log(content.replace(/\u21B5/g, '\n'))
-// })
-
 
 
 </script>
 
 <template>
-  <svg :width="width" :height="height" ref="svgElement">
+  <svg @click="copyContent" :width="width" :height="height" ref="svgElement">
     <rect :width="width" :height="height" fill="#eee"></rect>
     <text :y="(index + 1) * fontSize" v-for="(tokenLine, index) in tokenLines" :key="index">
       <tspan :font-size="fontSize" :fill="token.color" class="monospace" v-for="(token, index) in tokenLine" :key="index">
