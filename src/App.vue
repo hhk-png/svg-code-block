@@ -23,7 +23,7 @@ const copyContent = (content: string) => {
 <template>
   <div>
     <Suspense>
-      <code-block @copy="copyContent" :content="content" :width="500" :height="700"></code-block>
+      <code-block @copy="copyContent" :content="content" :width="500" :height="700" :font-size="20"></code-block>
     </Suspense>
   </div>
 </template>

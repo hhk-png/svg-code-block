@@ -1,18 +1,21 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, withDefaults } from 'vue';
 import type { IThemedToken } from 'shiki'
 import { shikiTokens } from './code-block.ts'
 
 // 传递进来的数据
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   content: string
   width: number
   height: number
+  fontSize?: number
   x?: number
   y?: number
-}>()
-
-const fontSize = ref<number>(20);
+}>(), {
+  fontSize: 20,
+  x: 0,
+  y: 0,
+})
 
 const preprocessToken = (arr: IThemedToken[][]) => {
   for (let i = 0; i < arr.length; i++) {
