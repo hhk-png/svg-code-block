@@ -18,7 +18,6 @@ const emits = defineEmits(['copy']);
 const VINTERVAL = 1.5 * props.fontSize;
 const HINTERVAL = 0.6 * props.fontSize;
 
-// 30 +
 
 // adaptive width and height
 const getAdaptive = (str: string, fontSize: number, fontFamily: string) => {
@@ -53,22 +52,8 @@ const [aWidth, aHeight] = getAdaptive(props.content, props.fontSize, '"Comic san
 adaptiveWidth.value = aWidth;
 adaptiveHeight.value = aHeight;
 
-// preprocess blank line
-const preprocessToken = (arr: IThemedToken[][]) => {
-  for (let i = 0; i < arr.length; i++) {
-    if (arr[i].length === 0) {
-      arr[i].push({
-        content: ' ',
-        color: '#000',
-      });
-    }
-  }
-  return arr;
-};
 
-
-
-const tokenLines = preprocessToken(await shikiTokens(props.content));
+const tokenLines = await shikiTokens(props.content);
 
 const decodeContent = (str: string) => {
   if (/^\s+$/.test(str)) {
@@ -97,8 +82,6 @@ const copyContent = async (e: Event) => {
   await navigator.clipboard.writeText(props.content)
   emits('copy', props.content)
 }
-
-
 
 </script>
 
