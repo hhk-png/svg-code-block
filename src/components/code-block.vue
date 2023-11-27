@@ -103,8 +103,7 @@ const copyContent = async (e: Event) => {
 </script>
 
 <template>
-  <svg @click="copyContent" :width="adaptiveWidth" :height="adaptiveHeight" class="monospace" ref="svgElement">
-    <rect :width="adaptiveWidth" :height="adaptiveHeight" fill="#eee"></rect>
+  <svg @click="copyContent" :width="adaptiveWidth" :height="adaptiveHeight" class="monospace backgroundGray" ref="svgElement">
     <text class="userSelectNone" :x="HINTERVAL / 2" :y="(index + 1) * VINTERVAL"
       v-for="(tokenLine, index) in tokenLines" :key="index">
       <tspan :font-size="fontSize" :fill="token.color" v-for="(token, index) in tokenLine" :key="index">
@@ -119,6 +118,10 @@ const copyContent = async (e: Event) => {
   user-select: text;
   cursor: default;
   /* transform-origin: center; */
+}
+
+.backgroundGray {
+  background-color: #eee;
 }
 
 /* 
