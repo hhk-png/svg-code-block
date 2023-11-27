@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { onMounted, ref, withDefaults } from 'vue';
-import type { IThemedToken } from 'shiki'
 import { shikiTokens } from './code-block.ts'
 
 // 传递进来的数据
@@ -15,20 +14,8 @@ const props = withDefaults(defineProps<{
   y: 0,
 })
 const emits = defineEmits(['copy']);
-const VINTERVAL = 1.5 * props.fontSize;
-const HINTERVAL = 0.6 * props.fontSize;
-
-
-// adaptive width and height
-const getAdaptive = (str: string, fontSize: number, fontFamily: string) => {
-  const arr = str.split('\n');
-  const len = arr.length;
-  const maxHLen = Math.max(...arr.map((item) => item.length));
-  const [fontWidth, fontHeight] = getFontWidthAndHeight(fontSize, fontFamily);
-  console.log(fontHeight)
-  return [maxHLen * fontWidth + HINTERVAL, len * fontHeight + VINTERVAL]
-}
-
+// const VINTERVAL = 1.5 * props.fontSize;
+// const HINTERVAL = 0.6 * props.fontSize;
 const getFontWidthAndHeight = (fontSize: number, fontFamily: string) => {
   const span = document.createElement('span');
   span.style.visibility = "hidden";
@@ -45,16 +32,31 @@ const getFontWidthAndHeight = (fontSize: number, fontFamily: string) => {
   return [parseInt(spanComputedStyle.width), parseInt(spanComputedStyle.height)]
 }
 
+const fontFamily = '"Lucida Console", Courier, monospace';
+const [ HINTERVAL, VINTERVAL ] = getFontWidthAndHeight(props.fontSize, fontFamily);
+
+console.log(HINTERVAL, VINTERVAL)
+// adaptive width and height
+const getAdaptive = (str: string) => {
+  const arr = str.split('\n');
+  const len = arr.length;
+  const maxHLen = Math.max(...arr.map((item) => item.length));
+  return [(maxHLen + 1) * HINTERVAL, (len + 1) * VINTERVAL]
+}
+
+
+
 
 const adaptiveWidth = ref<number>(0);
 const adaptiveHeight = ref<number>(0);
-const [aWidth, aHeight] = getAdaptive(props.content, props.fontSize, '"Comic sans MS", Courier, monospace');
+const [aWidth, aHeight] = getAdaptive(props.content);
 adaptiveWidth.value = aWidth;
 adaptiveHeight.value = aHeight;
 
 
 const tokenLines = await shikiTokens(props.content);
 
+// handle space
 const decodeContent = (str: string) => {
   if (/^\s+$/.test(str)) {
     return '\u00A0'.repeat(str.length);
@@ -86,9 +88,9 @@ const copyContent = async (e: Event) => {
 </script>
 
 <template>
-  <svg @click="copyContent" :width="adaptiveWidth" :height="adaptiveHeight" class="monospace backgroundGray" ref="svgElement">
-    <text class="userSelectNone" :x="HINTERVAL / 2" :y="(index + 1) * VINTERVAL"
-      v-for="(tokenLine, index) in tokenLines" :key="index">
+  <svg @click="copyContent" :width="adaptiveWidth" :height="adaptiveHeight" 
+    :fontFamily="fontFamily" class="backgroundGray" ref="svgElement">
+    <text class="userSelectNone" :x="0.5 * HINTERVAL" :y="(index + 1) * VINTERVAL + 0.25 * fontSize" v-for="(tokenLine, index) in tokenLines" :key="index">
       <tspan :font-size="fontSize" :fill="token.color" v-for="(token, index) in tokenLine" :key="index">
         {{ decodeContent(token.content) }}
       </tspan>
@@ -100,7 +102,6 @@ const copyContent = async (e: Event) => {
 .userSelectNone {
   user-select: text;
   cursor: default;
-  /* transform-origin: center; */
 }
 
 .backgroundGray {
@@ -112,9 +113,5 @@ const copyContent = async (e: Event) => {
     font-family="Comic sans MS"
     Lucida Console
 */
-.monospace {
-  font-family: "Comic sans MS", Courier, monospace;
-
-}
 </style>
 ./types.ts
