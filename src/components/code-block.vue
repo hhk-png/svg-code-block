@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref, withDefaults } from 'vue';
-import { shikiTokens } from './code-block.ts'
+import { getFontWidthAndHeight, shikiTokens, getAdaptiveWidthAndHeight, decodeContent } from './code-block.ts'
 
 // 传递进来的数据
 const props = withDefaults(defineProps<{
@@ -14,55 +14,19 @@ const props = withDefaults(defineProps<{
   y: 0,
 })
 const emits = defineEmits(['copy']);
-// const VINTERVAL = 1.5 * props.fontSize;
-// const HINTERVAL = 0.6 * props.fontSize;
-const getFontWidthAndHeight = (fontSize: number, fontFamily: string) => {
-  const span = document.createElement('span');
-  span.style.visibility = "hidden";
-  span.style.fontSize = fontSize + 'px';
-  span.style.fontFamily = fontFamily;
-  span.style.display = "block";
-  document.body.appendChild(span);
-  if (typeof span.textContent != "undefined") {
-    span.textContent = 'a';
-  } else {
-    span.innerText = 'a';
-  }
-  const spanComputedStyle = window.getComputedStyle(span);
-  return [parseInt(spanComputedStyle.width), parseInt(spanComputedStyle.height)]
-}
 
-const fontFamily = '"Lucida Console", Courier, monospace';
+
+const fontFamily = '"Comic sans MS", Courier, monospace';
 const [ HINTERVAL, VINTERVAL ] = getFontWidthAndHeight(props.fontSize, fontFamily);
-
-console.log(HINTERVAL, VINTERVAL)
-// adaptive width and height
-const getAdaptive = (str: string) => {
-  const arr = str.split('\n');
-  const len = arr.length;
-  const maxHLen = Math.max(...arr.map((item) => item.length));
-  return [(maxHLen + 1) * HINTERVAL, (len + 1) * VINTERVAL]
-}
-
-
-
 
 const adaptiveWidth = ref<number>(0);
 const adaptiveHeight = ref<number>(0);
-const [aWidth, aHeight] = getAdaptive(props.content);
+const [aWidth, aHeight] = getAdaptiveWidthAndHeight(props.content, HINTERVAL, VINTERVAL);
 adaptiveWidth.value = aWidth;
 adaptiveHeight.value = aHeight;
 
 
 const tokenLines = await shikiTokens(props.content);
-
-// handle space
-const decodeContent = (str: string) => {
-  if (/^\s+$/.test(str)) {
-    return '\u00A0'.repeat(str.length);
-  }
-  return str;
-}
 
 console.log(tokenLines)
 
