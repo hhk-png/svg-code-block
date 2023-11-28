@@ -61,3 +61,15 @@ export const decodeContent = (str: string) => {
   return str;
 }
 
+export const throttle = (func: Function, delay: number) => {
+  let start: boolean = true;
+  return (...args: any[]) => {
+    if (start) {
+      func(...args);
+      start = false;
+      setTimeout(() => {
+        start = true;
+      }, delay)
+    }
+  };
+}
