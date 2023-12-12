@@ -10,7 +10,7 @@ const props = withDefaults(defineProps<{
   x?: number
   y?: number
 }>(), {
-  content: "Please pass content prop.",
+  content: "Please pass content prop",
   fontSize: 20,
   x: 0,
   y: 0,
@@ -18,9 +18,9 @@ const props = withDefaults(defineProps<{
 const emits = defineEmits(['copy']);
 
 
-const fontFamily = ref<string>('"Comic sans MS", Courier, monospace');
+const fontFamily = ref<string>('"Lucida Console", Courier, monospace');
 const [HINTERVAL, VINTERVAL] = getFontWidthAndHeight(props.fontSize, fontFamily.value);
-
+console.log(HINTERVAL, VINTERVAL)
 const adaptiveWidth = ref<number>(0);
 const adaptiveHeight = ref<number>(0);
 const [aWidth, aHeight] = getAdaptiveWidthAndHeight(props.content, HINTERVAL, VINTERVAL);
