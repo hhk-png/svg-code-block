@@ -10,6 +10,7 @@ const props = withDefaults(defineProps<{
   x?: number
   y?: number
 }>(), {
+  content: "Please pass content prop.",
   fontSize: 20,
   x: 0,
   y: 0,
@@ -18,7 +19,7 @@ const emits = defineEmits(['copy']);
 
 
 const fontFamily = ref<string>('"Comic sans MS", Courier, monospace');
-const [ HINTERVAL, VINTERVAL ] = getFontWidthAndHeight(props.fontSize, fontFamily.value);
+const [HINTERVAL, VINTERVAL] = getFontWidthAndHeight(props.fontSize, fontFamily.value);
 
 const adaptiveWidth = ref<number>(0);
 const adaptiveHeight = ref<number>(0);
@@ -33,14 +34,12 @@ console.log(tokenLines)
 
 // svg dom 对象
 const svgElement = ref<SVGElement | null>(null)
-// onMounted(() => {
-//   // console.log(svgElement.value?.parentNode)
-//   // console.log((svgElement.value as any).getBBox())
-//   // 在svg 内部时，需要传入 x 和 y
-//   if (svgElement.value?.parentNode?.nodeName === 'svg' && !props.x && !props.y) {
-//     console.warn('Please pass the x and y parameters.')
-//   }
-// })
+onMounted(() => {
+  // 在svg 内部时，需要传入 x 和 y
+  if (svgElement.value?.parentNode?.nodeName === 'svg' && !props.x && !props.y) {
+    console.warn('Please pass the x and y parameters.')
+  }
+})
 
 // click to copy
 const copyContent = async (e: Event) => {
@@ -55,9 +54,10 @@ const copyContentThrottle = throttle(copyContent, copyDelay.value);
 </script>
 
 <template>
-  <svg @click="copyContentThrottle" :width="adaptiveWidth" :height="adaptiveHeight" 
-    :fontFamily="fontFamily" class="backgroundGray" ref="svgElement">
-    <text class="userSelectNone" :x="0.5 * HINTERVAL" :y="(index + 1) * VINTERVAL + 0.25 * fontSize" v-for="(tokenLine, index) in tokenLines" :key="index">
+  <svg @click="copyContentThrottle" :width="adaptiveWidth" :height="adaptiveHeight" :fontFamily="fontFamily"
+    class="backgroundGray" ref="svgElement">
+    <text class="userSelectNone" :x="0.5 * HINTERVAL" :y="(index + 1) * VINTERVAL + 0.25 * fontSize"
+      v-for="(tokenLine, index) in tokenLines" :key="index">
       <tspan :font-size="fontSize" :fill="token.color" v-for="(token, index) in tokenLine" :key="index">
         {{ decodeContent(token.content) }}
       </tspan>
