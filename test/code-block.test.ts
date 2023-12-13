@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { shikiTokens, getAdaptiveWidthAndHeight, decodeContent, getFontWidthAndHeight } from '../src/components/code-block.ts'
+import { shikiTokens, getAdaptiveWidthAndHeight, decodeContent } from '../src/components/code-block.ts'
 
 
 describe('code-block', async () => {
