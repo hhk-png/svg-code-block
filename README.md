@@ -20,5 +20,5 @@ pnpm run dev
 
 you could see the default display:
 
-![README](.\docs\images\README.png)
+![README](./docs/images/README.png)
 
